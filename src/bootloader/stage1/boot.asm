@@ -99,7 +99,7 @@ start:
 	mov di,buffer
 
 .search_kernel:
-	mov si,file_kernel_bin
+	mov si,file_stage2_bin
 	mov cx,11
 	push di
 	repe cmpsb
@@ -117,7 +117,7 @@ start:
 
 	; di :the address of the entry
 	mov ax,[di+26]
-	mov [kernel_cluster],ax
+	mov [stage2_cluster],ax
 
 	; load the FAT
 	mov ax,[dbd_reserved_sectors]
@@ -131,7 +131,7 @@ start:
 	mov es, bx
 	mov bx, KERNEL_LOAD_OFFSET
 .load_kernel_loop:
-	mov ax,[kernel_cluster]
+	mov ax,[stage2_cluster]
 	add ax,31
 
 	mov cl,1
@@ -140,7 +140,7 @@ start:
 
 	add bx,[dbd_bytes_per_sector]
 
-	mov ax,[kernel_cluster]
+	mov ax,[stage2_cluster]
 	mov cx,3
 	mul cx
 	mov cx,2
@@ -165,7 +165,7 @@ start:
 	cmp ax,0x0FF8
 	jae .read_finish
 
-	mov [kernel_cluster],ax
+	mov [stage2_cluster],ax
 	jmp .load_kernel_loop
 
 .read_finish:
@@ -323,9 +323,9 @@ disk_reset:
 
 msg_loading: db 'loading...',ENDL,0
 msg_read_error: db 'read from disk failed!',ENDL,0
-msg_kernel_not_found: db 'KERNEL BIN not found',ENDL,0
-file_kernel_bin: db 'KERNEL  BIN'
-kernel_cluster:   dw 0
+msg_kernel_not_found: db 'STAGE2.BIN not found',ENDL,0
+file_stage2_bin: db 'STAGE2  BIN'
+stage2_cluster:   dw 0
 
 KERNEL_LOAD_SEGMENT: equ 0x2000
 KERNEL_LOAD_OFFSET:  equ 0
